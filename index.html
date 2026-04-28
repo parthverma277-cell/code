@@ -17,94 +17,118 @@
             width: 100%; height: 100%;
             background-color: var(--bg);
             color: white;
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            perspective: 1500px; 
+            perspective: 1200px; /* Enhanced for mobile depth */
             touch-action: none;
         }
 
+        /* Soft background glow that follows touch */
         #glow {
             position: fixed;
-            width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(255, 183, 197, 0.08) 0%, transparent 70%);
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255, 183, 197, 0.12) 0%, transparent 70%);
             border-radius: 50%;
             pointer-events: none;
             transform: translate(-50%, -50%);
-            z-index: 100;
+            z-index: 1;
         }
 
-        /* The Animated Card */
+        /* The Main Mobile Card */
         .container {
             position: relative;
-            width: 300px;
-            height: 480px;
-            background: rgba(255, 255, 255, 0.01);
+            width: 85vw; /* Adaptive width for phones */
+            max-width: 320px;
+            height: 70vh; /* Taller aspect ratio for mobile */
+            max-height: 500px;
+            background: rgba(255, 255, 255, 0.02);
             border-radius: 40px;
             overflow: hidden;
-            box-shadow: 0 40px 100px rgba(0,0,0,1);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(5px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
             z-index: 10;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
+            transition: transform 0.15s ease-out; /* Smoother for finger tracking */
         }
 
-        /* Initial Cover */
+        /* Mobile Cover Layer */
         #cover {
             position: absolute;
             inset: 0;
-            background: #080808;
+            background: linear-gradient(180deg, #0a0a0a 0%, #050505 100%);
             z-index: 20;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s ease;
         }
 
         .heart-btn {
-            font-size: 4rem;
+            font-size: 5rem; /* Larger for easy tapping */
             cursor: pointer;
-            animation: float 2s infinite ease-in-out;
-            filter: drop-shadow(0 0 20px rgba(255, 133, 161, 0.3));
+            filter: drop-shadow(0 0 20px rgba(255, 133, 161, 0.4));
+            animation: float 2.5s infinite ease-in-out;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes float { 
+            0%, 100% { transform: translateY(0) scale(1); } 
+            50% { transform: translateY(-20px) scale(1.05); } 
+        }
 
-        .hint {
-            margin-top: 20px;
-            font-size: 0.6rem;
-            letter-spacing: 4px;
+        .tap-hint {
+            margin-top: 30px;
+            font-size: 0.65rem;
+            letter-spacing: 5px;
             color: var(--pink);
-            opacity: 0.5;
+            opacity: 0.6;
             text-transform: uppercase;
+            font-weight: 500;
         }
 
-        /* The Revealed Note */
+        /* The Secret Reveal Zone */
         #reveal-zone {
             opacity: 0;
-            transform: translateZ(20px);
-            transition: 1.5s ease;
+            transform: translateZ(30px);
+            transition: 1.5s cubic-bezier(0.19, 1, 0.22, 1);
             text-align: center;
-            padding: 20px;
+            padding: 25px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .note-card {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 30px 20px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .hii { 
+            font-size: 2rem; 
+            font-weight: 800; 
+            margin-bottom: 20px; 
+            display: block;
+            background: linear-gradient(to bottom, #fff, var(--pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .hii { font-size: 1.6rem; font-weight: 700; margin-bottom: 15px; display: block; }
-        .note-text { font-size: 1.05rem; line-height: 1.7; color: #ddd; font-weight: 300; }
-        .highlight { color: var(--pink); font-weight: 500; }
+        .note-text { 
+            font-size: 1.1rem; 
+            line-height: 1.8; 
+            color: #e0e0e0; 
+            font-weight: 300; 
+        }
+
+        .highlight { 
+            color: var(--rose); 
+            font-weight: 500; 
+            text-shadow: 0 0 10px rgba(255, 133, 161, 0.2);
+        }
 
         .reveal-active #reveal-zone { opacity: 1; }
 
@@ -116,20 +140,18 @@
 
 <div class="container" id="main-box">
     <div id="cover">
-        <div class="heart-btn" onclick="openSecret()">🤍</div>
-        <div class="hint">Open this</div>
+        <div class="heart-btn" id="trigger" onclick="openSecret()">🤍</div>
+        <div class="tap-hint">Tap the heart</div>
     </div>
 
     <div id="reveal-zone">
-        <div class="note-card">
-            <span class="hii">Hii! ✨</span>
-            <div class="note-text">
-                tbh, i built this just to say you're the <span class="highlight">cutest</span> friend i have.
-                <br><br>
-                honestly? you're the <span class="highlight">favorite part</span> of my day. 🌸
-                <br><br>
-                stay iconic.
-            </div>
+        <span class="hii">Hii! ✨</span>
+        <div class="note-text">
+            tbh, I built this just to say you're the <span class="highlight">cutest</span> friend I have.
+            <br><br>
+            honestly? you're the <span class="highlight">favorite part</span> of my day. 🌸
+            <br><br>
+            stay iconic.
         </div>
     </div>
 </div>
@@ -138,41 +160,72 @@
     const glow = document.getElementById('glow');
     const mainBox = document.getElementById('main-box');
     const cover = document.getElementById('cover');
+    const trigger = document.getElementById('trigger');
 
-    // 3D Tilt Logic
+    // 1. Mobile Touch/Tilt Interaction
+    document.addEventListener('touchmove', (e) => {
+        const t = e.touches[0];
+        
+        // Move the ambient glow
+        glow.style.left = t.clientX + 'px';
+        glow.style.top = t.clientY + 'px';
+        
+        // Calculate Tilt based on touch position relative to screen center
+        const x = (window.innerWidth / 2 - t.clientX) / 25;
+        const y = (window.innerHeight / 2 - t.clientY) / 25;
+        
+        mainBox.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    }, { passive: true });
+
+    // 2. Desktop Mouse fallback (for testing)
     document.addEventListener('mousemove', (e) => {
         glow.style.left = e.clientX + 'px';
         glow.style.top = e.clientY + 'px';
-        
-        const x = (window.innerWidth / 2 - e.clientX) / 40;
-        const y = (window.innerHeight / 2 - e.clientY) / 40;
+        const x = (window.innerWidth / 2 - e.clientX) / 30;
+        const y = (window.innerHeight / 2 - e.clientY) / 30;
         mainBox.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
     });
 
-    document.addEventListener('touchmove', (e) => {
-        const t = e.touches[0];
-        glow.style.left = t.clientX + 'px';
-        glow.style.top = t.clientY + 'px';
-        const x = (window.innerWidth / 2 - t.clientX) / 40;
-        const y = (window.innerHeight / 2 - t.clientY) / 40;
-        mainBox.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
-    });
-
+    // 3. Reveal Animation Sequence
     function openSecret() {
-        document.querySelector('.heart-btn').innerText = '💗';
+        // Change heart color
+        trigger.innerText = '💗';
+        trigger.style.animation = 'none';
+        trigger.style.transform = 'scale(1.5)';
+        
+        // Cinematic dissolve
         cover.style.opacity = '0';
-        cover.style.transform = 'scale(1.2) rotate(5deg)';
+        cover.style.transform = 'scale(1.1) translateZ(50px)';
         mainBox.classList.add('reveal-active');
 
-        confetti({
-            particleCount: 100,
-            spread: 60,
-            origin: { y: 0.6 },
-            colors: ['#ffb7c5', '#ffffff'],
-            shapes: ['heart']
-        });
+        // Mobile-friendly heart confetti
+        const end = Date.now() + (1 * 1000);
+        const colors = ['#ffb7c5', '#ff85a1', '#ffffff'];
 
-        setTimeout(() => cover.style.display = 'none', 1200);
+        (function frame() {
+            confetti({
+                particleCount: 3,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: colors
+            });
+            confetti({
+                particleCount: 3,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: colors
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        }());
+
+        setTimeout(() => {
+            cover.style.display = 'none';
+        }, 1100);
     }
 </script>
 </body>
