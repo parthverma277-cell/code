@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For You ✨</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --pink: #ffb7c5;
+            --rose: #ff85a1;
+            --bg: #050505;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1500px; 
+            touch-action: none;
+        }
+
+        #glow {
+            position: fixed;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255, 183, 197, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+        }
+
+        /* The Animated Card */
+        .container {
+            position: relative;
+            width: 300px;
+            height: 480px;
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0,0,0,1);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(5px);
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Initial Cover */
+        #cover {
+            position: absolute;
+            inset: 0;
+            background: #080808;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .heart-btn {
+            font-size: 4rem;
+            cursor: pointer;
+            animation: float 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 20px rgba(255, 133, 161, 0.3));
+        }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        .hint {
+            margin-top: 20px;
+            font-size: 0.6rem;
+            letter-spacing: 4px;
+            color: var(--pink);
+            opacity: 0.5;
+            text-transform: uppercase;
+        }
+
+        /* The Revealed Note */
+        #reveal-zone {
+            opacity: 0;
+            transform: translateZ(20px);
+            transition: 1.5s ease;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .note-card {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 30px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hii { font-size: 1.6rem; font-weight: 700; margin-bottom: 15px; display: block; }
+        .note-text { font-size: 1.05rem; line-height: 1.7; color: #ddd; font-weight: 300; }
+        .highlight { color: var(--pink); font-weight: 500; }
+
+        .reveal-active #reveal-zone { opacity: 1; }
+
+    </style>
+</head>
+<body>
+
+<div id="glow"></div>
+
+<div class="container" id="main-box">
+    <div id="cover">
+        <div class="heart-btn" onclick="openSecret()">🤍</div>
+        <div class="hint">Open this</div>
+    </div>
+
+    <div id="reveal-zone">
+        <div class="note-card">
+            <span class="hii">Hii! ✨</span>
+            <div class="note-text">
+                tbh, i built this just to say you're the <span class="highlight">cutest</span> friend i have.
+                <br><br>
+                honestly? you're the <span class="highlight">favorite part</span> of my day. 🌸
+                <br><br>
+                stay iconic.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const glow = document.getElementById('glow');
+    const mainBox = document.getElementById('main-box');
+    const cover = document.getElementById('cover');
+
+    // 3D Tilt Logic
+    document.addEventListener('mousemove', (e) => {
+        glow.style.left = e.clientX + 'px';
+        glow.style.top = e.clientY + 'px';
+        
+        const x = (window.innerWidth / 2 - e.clientX) / 40;
+        const y = (window.innerHeight / 2 - e.clientY) / 40;
+        mainBox.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    });
+
+    document.addEventListener('touchmove', (e) => {
+        const t = e.touches[0];
+        glow.style.left = t.clientX + 'px';
+        glow.style.top = t.clientY + 'px';
+        const x = (window.innerWidth / 2 - t.clientX) / 40;
+        const y = (window.innerHeight / 2 - t.clientY) / 40;
+        mainBox.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    });
+
+    function openSecret() {
+        document.querySelector('.heart-btn').innerText = '💗';
+        cover.style.opacity = '0';
+        cover.style.transform = 'scale(1.2) rotate(5deg)';
+        mainBox.classList.add('reveal-active');
+
+        confetti({
+            particleCount: 100,
+            spread: 60,
+            origin: { y: 0.6 },
+            colors: ['#ffb7c5', '#ffffff'],
+            shapes: ['heart']
+        });
+
+        setTimeout(() => cover.style.display = 'none', 1200);
+    }
+</script>
+</body>
+</html>
